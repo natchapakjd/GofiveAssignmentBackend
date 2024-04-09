@@ -34,9 +34,34 @@ namespace AssignmentAPI.Repositories.Implementation
             return existingUser;
         }
 
-        public async Task<IEnumerable<User>> GetAllAsync()
+        public async Task<IEnumerable<User>> GetAllAsync(string? query = null, string? sortBy = null, string? sortDirection = null,int? pageNumber = 1, int? pageSize = 100)
         {
-            return await dbContext.Users.ToListAsync();
+            //return await dbContext.Users.ToListAsync();
+            //Query 
+            var users = dbContext.Users.AsQueryable();
+
+            //Filtering
+            if(string.IsNullOrWhiteSpace(query) == false)
+            {
+                users =  users.Where(u => u.firstName.Contains(query));
+            }
+            //Sorting
+            if (string.IsNullOrWhiteSpace(sortBy) == false)
+            {
+                if (string.Equals(sortBy, "firstName", StringComparison.OrdinalIgnoreCase))
+                {
+                    var isAsc =string.Equals(sortDirection,"asc",StringComparison.OrdinalIgnoreCase)? true : false;
+
+                    users = isAsc ?  users.OrderBy(x => x.firstName) : users.OrderByDescending(x => x.firstName);
+                }
+            }
+            //Pagination
+
+            var skipResults = (pageNumber - 1) * pageSize;
+            users = users.Skip(skipResults ?? 0 ).Take(pageSize ?? 100);
+            return await users.ToListAsync();
+
+
         }
 
         public async Task<User?> GetById(string id)

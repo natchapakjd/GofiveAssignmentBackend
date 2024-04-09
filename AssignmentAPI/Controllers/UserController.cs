@@ -14,7 +14,7 @@ namespace AssignmentAPI.Controllers
         private readonly IUserRepository userRepository;
         private readonly IPermissionRepository permissionRepository;
 
-        public UserController(IUserRepository userRepository) 
+        public UserController(IUserRepository userRepository, IPermissionRepository permissionRepository)
         {
             this.userRepository = userRepository;
             this.permissionRepository = permissionRepository;
@@ -25,7 +25,6 @@ namespace AssignmentAPI.Controllers
         public async Task<IActionResult> CreateUser(CreateUserRequestDto request)
         {
 
-          
 
             var user = new User
 
@@ -52,7 +51,7 @@ namespace AssignmentAPI.Controllers
                 }
             }
 
-            await userRepository.CreateAsync(user);
+            user = await userRepository.CreateAsync(user);
 
 
             var response = new UserDto
@@ -68,7 +67,10 @@ namespace AssignmentAPI.Controllers
                 Permissions = user.Permissions.Select(x  => new PermissionDto
                 {
                     permissionId = x.permissionId,
-                    permissionName = x.permissionName
+                    permissionName =x.permissionName,
+                    isReadable = x.isReadable,
+                    isWritable = x.isWritable,
+                    isDeletable = x.isDeletable
                 }).ToList()
             };
 
@@ -77,9 +79,14 @@ namespace AssignmentAPI.Controllers
 
         [HttpGet]
 
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<IActionResult> GetAllUsers(
+            [FromQuery] string? query, 
+            [FromQuery] string? sortBy, 
+            [FromQuery] string? sortDirection, 
+            [FromQuery] int? pageNumber, 
+            [FromQuery] int? pageSize)
         {
-            var users = await userRepository.GetAllAsync();
+            var users = await userRepository.GetAllAsync(query,sortBy,sortDirection,pageNumber,pageSize);
 
             var response = new List<UserDto>();
 
@@ -93,7 +100,9 @@ namespace AssignmentAPI.Controllers
                     firstName = user.firstName,
                     lastName = user.lastName,
                     phone = user.phone,
-                    email = user.email
+                    email = user.email,
+                    roleId = user.roleId
+
                 });
             }
 
@@ -140,7 +149,8 @@ namespace AssignmentAPI.Controllers
                 firstName = existingUser.firstName,
                 lastName = existingUser.lastName,
                 phone = existingUser.phone,
-                email = existingUser.email
+                email = existingUser.email,
+                roleId =existingUser.roleId
             };
 
             return Ok(response);

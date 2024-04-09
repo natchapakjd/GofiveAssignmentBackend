@@ -7,7 +7,7 @@
         public bool isReadable { get; set; }
         public bool isWritable { get; set; }
         public bool isDeletable { get; set; }
-        public ICollection<User>? Users { get; set; }
+        public ICollection<User> Users { get; set; }
 
     }
 }

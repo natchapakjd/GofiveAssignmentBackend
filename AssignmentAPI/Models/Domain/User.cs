@@ -12,6 +12,6 @@
 
         public string roleId { get; set; }
         public Role Role { get; set; }
-        public ICollection<Permission>? Permissions { get; set; }
+        public ICollection<Permission> Permissions { get; set; } 
     }
 }
