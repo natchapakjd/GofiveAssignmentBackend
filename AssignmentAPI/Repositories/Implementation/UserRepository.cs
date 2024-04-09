@@ -34,7 +34,7 @@ namespace AssignmentAPI.Repositories.Implementation
             return existingUser;
         }
 
-        public async Task<IEnumerable<User>> GetAllAsync(string? query = null, string? sortBy = null, string? sortDirection = null,int? pageNumber = 1, int? pageSize = 100)
+        public async Task<IEnumerable<User>> GetDataTable(string? query = null, string? sortBy = null, string? sortDirection = null,int? pageNumber = 1, int? pageSize = 100)
         {
             //return await dbContext.Users.ToListAsync();
             //Query 
@@ -63,7 +63,12 @@ namespace AssignmentAPI.Repositories.Implementation
 
 
         }
+        public async Task<IEnumerable<User>> GetAllAsync()
+        {
+            return await dbContext.Users.ToListAsync();
+            
 
+        }
         public async Task<User?> GetById(string id)
         {
             return await dbContext.Users.FirstOrDefaultAsync(c => c.id == id);
@@ -71,7 +76,7 @@ namespace AssignmentAPI.Repositories.Implementation
 
         public async  Task<User?> UpdateAsync(User user)
         {
-            var existingUser = await dbContext.Users.FirstOrDefaultAsync(c => c.id == user.id);
+            var existingUser = await dbContext.Users.Include(c=>c.Permissions).FirstOrDefaultAsync(c => c.id == user.id);
             if (existingUser != null)
             {
                 dbContext.Entry(existingUser).CurrentValues.SetValues(user);

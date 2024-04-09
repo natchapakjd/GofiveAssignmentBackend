@@ -79,14 +79,9 @@ namespace AssignmentAPI.Controllers
 
         [HttpGet]
 
-        public async Task<IActionResult> GetAllUsers(
-            [FromQuery] string? query, 
-            [FromQuery] string? sortBy, 
-            [FromQuery] string? sortDirection, 
-            [FromQuery] int? pageNumber, 
-            [FromQuery] int? pageSize)
+        public async Task<IActionResult> GetAllUsers()
         {
-            var users = await userRepository.GetAllAsync(query,sortBy,sortDirection,pageNumber,pageSize);
+            var users = await userRepository.GetAllAsync();
 
             var response = new List<UserDto>();
 
@@ -109,7 +104,37 @@ namespace AssignmentAPI.Controllers
             return Ok(response);
         }
 
+        [HttpPost("DataTable")]
 
+        public async Task<IActionResult> GetDataTable(
+            [FromQuery] string? query,
+            [FromQuery] string? sortBy,
+            [FromQuery] string? sortDirection,
+            [FromQuery] int? pageNumber,
+            [FromQuery] int? pageSize)
+        {
+            var users = await userRepository.GetDataTable(query, sortBy, sortDirection, pageNumber, pageSize);
+
+            var response = new List<UserDto>();
+
+            foreach (var user in users)
+            {
+                response.Add(new UserDto()
+                {
+                    id = user.id,
+                    userName = user.userName,
+                    password = user.password,
+                    firstName = user.firstName,
+                    lastName = user.lastName,
+                    phone = user.phone,
+                    email = user.email,
+                    roleId = user.roleId
+
+                });
+            }
+
+            return Ok(response);
+        }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser([FromRoute] string id)
@@ -163,14 +188,25 @@ namespace AssignmentAPI.Controllers
 
             var user = new User
             {
-                id = id,
+                id = request.id,
                 userName = request.userName,
                 password = request.password,
                 firstName = request.firstName,
                 lastName = request.lastName,
                 phone = request.phone,
-                email = request.email
+                email = request.email,
+                roleId = request.roleId,
+                Permissions = new List<Permission>()
             };
+            
+            foreach(var permissionString in request.Permissions)
+            {
+                var existingPermission = await permissionRepository.GetById(permissionString);
+                if(existingPermission is not null)
+                {
+                    user.Permissions.Add(existingPermission);
+                }
+            }
 
             user = await userRepository.UpdateAsync(user);
             if (user == null)
@@ -186,7 +222,16 @@ namespace AssignmentAPI.Controllers
                 firstName = user.firstName,
                 lastName = user.lastName,
                 phone = user.phone,
-                email = user.email
+                email = user.email,
+                roleId = user.roleId,
+                Permissions = user.Permissions.Select(x => new PermissionDto
+                {
+                    permissionId = x.permissionId,
+                    permissionName = x.permissionName,
+                    isReadable = x.isReadable,
+                    isWritable = x.isWritable,
+                    isDeletable = x.isDeletable
+                }).ToList()
             };
             return Ok(response);
 
