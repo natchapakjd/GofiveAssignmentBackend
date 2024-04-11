@@ -9,7 +9,6 @@
         public string email { get; set; }
         public string password { get; set; }
         public string phone { get; set; }
-
         public string roleId { get; set; }
         public Role Role { get; set; }
         public ICollection<Permission> Permissions { get; set; } 

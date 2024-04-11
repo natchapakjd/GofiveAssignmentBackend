@@ -1,5 +1,6 @@
 ﻿using AssignmentAPI.Models.Domain;
 using AssignmentAPI.Models.DTO;
+using AssignmentAPI.Models.DTO.Permissions;
 using AssignmentAPI.Repositories.Implementation;
 using AssignmentAPI.Repositories.Interface;
 using Microsoft.AspNetCore.Http;
@@ -24,11 +25,11 @@ namespace AssignmentAPI.Controllers
 
             var permissions = await permissionRepository.GetAllAsync();
 
-            var response = new List<PermissionDto>();
+            var response = new List<ResponsePermission>();
 
             foreach (var permission in permissions)
             {
-                response.Add(new PermissionDto()
+                response.Add(new ResponsePermission()
                 {
                     permissionId = permission.permissionId,
                     permissionName = permission.permissionName,
@@ -49,7 +50,7 @@ namespace AssignmentAPI.Controllers
                 return NotFound();
             }
 
-            var response = new PermissionDto()
+            var response = new ResponsePermission
             {
                 permissionId = existingPermission.permissionId,
                 permissionName = existingPermission.permissionName,

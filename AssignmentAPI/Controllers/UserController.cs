@@ -96,7 +96,15 @@ namespace AssignmentAPI.Controllers
                     lastName = user.lastName,
                     phone = user.phone,
                     email = user.email,
-                    roleId = user.roleId
+                    roleId = user.roleId,
+                   Permissions = user.Permissions.Select(x  => new PermissionDto
+                    {
+                        permissionId = x.permissionId,
+                        permissionName =x.permissionName,
+                        isReadable = x.isReadable,
+                        isWritable = x.isWritable,
+                        isDeletable = x.isDeletable
+                    }).ToList()
 
                 });
             }
@@ -107,13 +115,13 @@ namespace AssignmentAPI.Controllers
         [HttpPost("DataTable")]
 
         public async Task<IActionResult> GetDataTable(
-            [FromQuery] string? query,
-            [FromQuery] string? sortBy,
-            [FromQuery] string? sortDirection,
+            [FromQuery] string? search,
+            [FromQuery] string? orderBy,
+            [FromQuery] string? orderDirection,
             [FromQuery] int? pageNumber,
             [FromQuery] int? pageSize)
         {
-            var users = await userRepository.GetDataTable(query, sortBy, sortDirection, pageNumber, pageSize);
+            var users = await userRepository.GetDataTable(search, orderBy, orderDirection, pageNumber, pageSize);
 
             var response = new List<UserDto>();
 
@@ -157,7 +165,7 @@ namespace AssignmentAPI.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCategoryById([FromRoute] string id)
+        public async Task<IActionResult> GetUserById([FromRoute] string id)
         {
             var existingUser = await userRepository.GetById(id);
 
@@ -175,14 +183,23 @@ namespace AssignmentAPI.Controllers
                 lastName = existingUser.lastName,
                 phone = existingUser.phone,
                 email = existingUser.email,
-                roleId =existingUser.roleId
+                roleId = existingUser.roleId,
+                Permissions = existingUser.Permissions.Select(x => new PermissionDto
+                {
+                    permissionId = x.permissionId,
+                    permissionName = x.permissionName,
+                    isReadable = x.isReadable,
+                    isWritable = x.isWritable,
+                    isDeletable = x.isDeletable
+                }).ToList()
+
             };
 
             return Ok(response);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditCategory([FromRoute] string id, UpdateUserRequestDto request)
+        public async Task<IActionResult> EditUser([FromRoute] string id, UpdateUserRequestDto request)
         {
             // Convert DTO to Domain Model
 

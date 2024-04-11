@@ -34,23 +34,23 @@ namespace AssignmentAPI.Repositories.Implementation
             return existingUser;
         }
 
-        public async Task<IEnumerable<User>> GetDataTable(string? query = null, string? sortBy = null, string? sortDirection = null,int? pageNumber = 1, int? pageSize = 100)
+        public async Task<IEnumerable<User>> GetDataTable(string? search = null, string? orderBy = null, string? orderDirection = null,int? pageNumber = 1, int? pageSize = 100)
         {
             //return await dbContext.Users.ToListAsync();
             //Query 
             var users = dbContext.Users.AsQueryable();
 
             //Filtering
-            if(string.IsNullOrWhiteSpace(query) == false)
+            if(string.IsNullOrWhiteSpace(search) == false)
             {
-                users =  users.Where(u => u.firstName.Contains(query));
+                users =  users.Where(u => u.firstName.Contains(search));
             }
             //Sorting
-            if (string.IsNullOrWhiteSpace(sortBy) == false)
+            if (string.IsNullOrWhiteSpace(orderBy) == false)
             {
-                if (string.Equals(sortBy, "firstName", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(orderBy, "firstName", StringComparison.OrdinalIgnoreCase))
                 {
-                    var isAsc =string.Equals(sortDirection,"asc",StringComparison.OrdinalIgnoreCase)? true : false;
+                    var isAsc =string.Equals(orderDirection,"asc",StringComparison.OrdinalIgnoreCase)? true : false;
 
                     users = isAsc ?  users.OrderBy(x => x.firstName) : users.OrderByDescending(x => x.firstName);
                 }
@@ -65,13 +65,13 @@ namespace AssignmentAPI.Repositories.Implementation
         }
         public async Task<IEnumerable<User>> GetAllAsync()
         {
-            return await dbContext.Users.ToListAsync();
+            return await dbContext.Users.Include(x => x.Permissions).ToListAsync();
             
 
         }
         public async Task<User?> GetById(string id)
         {
-            return await dbContext.Users.FirstOrDefaultAsync(c => c.id == id);
+            return await dbContext.Users.Include(x => x.Permissions).FirstOrDefaultAsync(c => c.id == id);
         }
 
         public async  Task<User?> UpdateAsync(User user)
