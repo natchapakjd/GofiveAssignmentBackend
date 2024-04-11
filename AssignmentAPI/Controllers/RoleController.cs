@@ -1,4 +1,4 @@
-﻿using AssignmentAPI.Models.DTO;
+﻿using AssignmentAPI.Models.DTO.Roles;
 using AssignmentAPI.Repositories.Implementation;
 using AssignmentAPI.Repositories.Interface;
 using Microsoft.AspNetCore.Http;

@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace AssignmentAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class initialize : Migration
+    public partial class initializeDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,9 +17,9 @@ namespace AssignmentAPI.Migrations
                 {
                     permissionId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     permissionName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    isReadable = table.Column<bool>(type: "bit", nullable: false),
-                    isWritable = table.Column<bool>(type: "bit", nullable: false),
-                    isDeletable = table.Column<bool>(type: "bit", nullable: false)
+                    isReadable = table.Column<bool>(type: "bit", nullable: true),
+                    isWritable = table.Column<bool>(type: "bit", nullable: true),
+                    isDeletable = table.Column<bool>(type: "bit", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -48,7 +49,8 @@ namespace AssignmentAPI.Migrations
                     email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    roleId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    roleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    createdDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {

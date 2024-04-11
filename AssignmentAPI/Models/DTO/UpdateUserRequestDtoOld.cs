@@ -1,6 +1,6 @@
 ﻿namespace AssignmentAPI.Models.DTO
 {
-    public class UpdateUserRequestDto
+    public class UpdateUserRequestDtoOld
     {
         public string id { get; set; }
         public string userName { get; set; }

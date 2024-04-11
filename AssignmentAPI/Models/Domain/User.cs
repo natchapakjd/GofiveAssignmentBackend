@@ -11,6 +11,7 @@
         public string phone { get; set; }
         public string roleId { get; set; }
         public Role Role { get; set; }
+        public DateTime createdDate { get; set; }
         public ICollection<Permission> Permissions { get; set; } 
     }
 }

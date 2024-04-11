@@ -1,6 +1,8 @@
 ﻿using AssignmentAPI.Data;
 using AssignmentAPI.Models.Domain;
 using AssignmentAPI.Models.DTO;
+using AssignmentAPI.Models.DTO.Permissions;
+using AssignmentAPI.Models.DTO.Users;
 using AssignmentAPI.Repositories.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,13 +23,9 @@ namespace AssignmentAPI.Controllers
         }
 
         [HttpPost]
-
-        public async Task<IActionResult> CreateUser(CreateUserRequestDto request)
+        public async Task<IActionResult> CreateUserTest(CreateUserDto request)
         {
-
-
             var user = new User
-
             {
                 id = request.id,
                 userName = request.userName,
@@ -37,15 +35,13 @@ namespace AssignmentAPI.Controllers
                 phone = request.phone,
                 email = request.email,
                 roleId = request.roleId,
+                createdDate = DateTime.Now,
                 Permissions = new List<Permission>()
-
-                
             };
-
-            foreach (var permissionString in request.Permissions)
+            foreach (var permissionString in request.permissions)
             {
-                var existingPermission = await permissionRepository.GetById(permissionString);
-                if(existingPermission != null)
+                var existingPermission = await permissionRepository.GetById(permissionString.permissionId);
+                if (existingPermission != null)
                 {
                     user.Permissions.Add(existingPermission);
                 }
@@ -64,19 +60,17 @@ namespace AssignmentAPI.Controllers
                 phone = user.phone,
                 email = user.email,
                 roleId = user.roleId,
-                Permissions = user.Permissions.Select(x  => new PermissionDto
+                createdDate = user.createdDate,
+                Permissions = user.Permissions.Select(x => new ResponsePermissionAllDto
                 {
                     permissionId = x.permissionId,
-                    permissionName =x.permissionName,
                     isReadable = x.isReadable,
                     isWritable = x.isWritable,
                     isDeletable = x.isDeletable
                 }).ToList()
             };
-
             return Ok(response);
         }
-
         [HttpGet]
 
         public async Task<IActionResult> GetAllUsers()
@@ -97,10 +91,11 @@ namespace AssignmentAPI.Controllers
                     phone = user.phone,
                     email = user.email,
                     roleId = user.roleId,
-                   Permissions = user.Permissions.Select(x  => new PermissionDto
+                    createdDate = user.createdDate,
+
+                    Permissions = user.Permissions.Select(x  => new ResponsePermissionAllDto
                     {
                         permissionId = x.permissionId,
-                        permissionName =x.permissionName,
                         isReadable = x.isReadable,
                         isWritable = x.isWritable,
                         isDeletable = x.isDeletable
@@ -136,7 +131,9 @@ namespace AssignmentAPI.Controllers
                     lastName = user.lastName,
                     phone = user.phone,
                     email = user.email,
-                    roleId = user.roleId
+                    roleId = user.roleId,
+                    createdDate = user.createdDate,
+
 
                 });
             }
@@ -184,10 +181,9 @@ namespace AssignmentAPI.Controllers
                 phone = existingUser.phone,
                 email = existingUser.email,
                 roleId = existingUser.roleId,
-                Permissions = existingUser.Permissions.Select(x => new PermissionDto
+                Permissions = existingUser.Permissions.Select(x => new ResponsePermissionAllDto
                 {
                     permissionId = x.permissionId,
-                    permissionName = x.permissionName,
                     isReadable = x.isReadable,
                     isWritable = x.isWritable,
                     isDeletable = x.isDeletable
@@ -197,15 +193,15 @@ namespace AssignmentAPI.Controllers
 
             return Ok(response);
         }
-
+       
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditUser([FromRoute] string id, UpdateUserRequestDto request)
+        public async Task<IActionResult> EditUserVersion2([FromRoute] string id, UpdateUserRequestDto request)
         {
             // Convert DTO to Domain Model
 
             var user = new User
             {
-                id = request.id,
+                id = id,
                 userName = request.userName,
                 password = request.password,
                 firstName = request.firstName,
@@ -215,11 +211,11 @@ namespace AssignmentAPI.Controllers
                 roleId = request.roleId,
                 Permissions = new List<Permission>()
             };
-            
-            foreach(var permissionString in request.Permissions)
+
+            foreach (var permissionString in request.permissions)
             {
-                var existingPermission = await permissionRepository.GetById(permissionString);
-                if(existingPermission is not null)
+                var existingPermission = await permissionRepository.GetById(permissionString.permissionId);
+                if (existingPermission is not null)
                 {
                     user.Permissions.Add(existingPermission);
                 }

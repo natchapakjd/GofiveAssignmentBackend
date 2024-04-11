@@ -1,4 +1,4 @@
-﻿namespace AssignmentAPI.Models.DTO
+﻿namespace AssignmentAPI.Models.DTO.Roles
 {
     public class RoleDto
     {
