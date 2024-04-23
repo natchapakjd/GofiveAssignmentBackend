@@ -25,14 +25,17 @@ namespace AssignmentAPI.Controllers
 
             var permissions = await permissionRepository.GetAllAsync();
 
-            var response = new List<ResponsePermission>();
+            var response = new List<PermissionDto>();
 
             foreach (var permission in permissions)
             {
-                response.Add(new ResponsePermission()
+                response.Add(new PermissionDto()
                 {
                     permissionId = permission.permissionId,
                     permissionName = permission.permissionName,
+                    isDeletable = permission.isDeletable,
+                    isReadable = permission.isReadable,
+                    isWritable = permission.isWritable
 
                 });
             }

@@ -23,7 +23,7 @@ namespace AssignmentAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUserTest(CreateUserDto request)
+        public async Task<IActionResult> CreateUser(CreateUserDto request)
         {
             var user = new User
             {
@@ -195,7 +195,7 @@ namespace AssignmentAPI.Controllers
         }
        
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditUserVersion2([FromRoute] string id, UpdateUserRequestDto request)
+        public async Task<IActionResult> EditUser([FromRoute] string id, UpdateUserRequestDto request)
         {
             // Convert DTO to Domain Model
 
@@ -209,6 +209,7 @@ namespace AssignmentAPI.Controllers
                 phone = request.phone,
                 email = request.email,
                 roleId = request.roleId,
+                createdDate = DateTime.Now,
                 Permissions = new List<Permission>()
             };
 
@@ -237,10 +238,9 @@ namespace AssignmentAPI.Controllers
                 phone = user.phone,
                 email = user.email,
                 roleId = user.roleId,
-                Permissions = user.Permissions.Select(x => new PermissionDto
+                Permissions = user.Permissions.Select(x => new ResponsePermissionAllDto
                 {
                     permissionId = x.permissionId,
-                    permissionName = x.permissionName,
                     isReadable = x.isReadable,
                     isWritable = x.isWritable,
                     isDeletable = x.isDeletable
